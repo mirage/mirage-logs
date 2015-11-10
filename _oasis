@@ -1,0 +1,15 @@
+OASISFormat: 0.4
+Name:        mirage-logs
+Version:     0.1
+Synopsis:    Mirage support for Logs library
+Authors:     Thomas Leonard
+License:     ISC
+Plugins:     META (0.3), DevFiles (0.4)
+BuildTools:  ocamlbuild
+
+Library mirage_logs
+  CompiledObject:     best
+  Path:               lib
+  Findlibname:        mirage-logs
+  Modules:            Mirage_logs
+  BuildDepends:       logs, mirage-types
