@@ -1,5 +1,5 @@
 # OASIS_START
-# DO NOT EDIT (digest: 17334310dfaf40338204056a7a915ee0)
+# DO NOT EDIT (digest: d57fc62c5c23b62c49759a360926ddd9)
 # Ignore VCS directories, you can use the same kind of rule outside
 # OASIS_START/STOP if you want to exclude directories that contains
 # useless stuff for the build process
@@ -17,6 +17,23 @@ true: annot, bin_annot
 # Library mirage_logs
 "lib/mirage_logs.cmxs": use_mirage_logs
 <lib/*.ml{,i,y}>: pkg_logs
+<lib/*.ml{,i,y}>: pkg_lwt
+<lib/*.ml{,i,y}>: pkg_mirage-profile
 <lib/*.ml{,i,y}>: pkg_mirage-types
+# Executable test_logs
+<lib_test/test.{native,byte}>: pkg_alcotest
+<lib_test/test.{native,byte}>: pkg_logs
+<lib_test/test.{native,byte}>: pkg_lwt
+<lib_test/test.{native,byte}>: pkg_lwt.unix
+<lib_test/test.{native,byte}>: pkg_mirage-profile
+<lib_test/test.{native,byte}>: pkg_mirage-types
+<lib_test/test.{native,byte}>: use_mirage_logs
+<lib_test/*.ml{,i,y}>: pkg_alcotest
+<lib_test/*.ml{,i,y}>: pkg_logs
+<lib_test/*.ml{,i,y}>: pkg_lwt
+<lib_test/*.ml{,i,y}>: pkg_lwt.unix
+<lib_test/*.ml{,i,y}>: pkg_mirage-profile
+<lib_test/*.ml{,i,y}>: pkg_mirage-types
+<lib_test/*.ml{,i,y}>: use_mirage_logs
 # OASIS_STOP
 true: warn(A), strict_sequence

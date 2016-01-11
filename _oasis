@@ -12,4 +12,25 @@ Library mirage_logs
   Path:               lib
   Findlibname:        mirage-logs
   Modules:            Mirage_logs
-  BuildDepends:       logs, mirage-types
+  BuildDepends:       logs, mirage-types, lwt, mirage-profile
+
+Document mirage_logs
+  Title:                mirage-logs docs
+  Type:                 OCamlbuild (0.4)
+  BuildTools+:          ocamldoc
+  Install:              true
+  XOCamlbuildPath:      lib/
+  XOCamlbuildLibraries: mirage-logs
+
+Executable test_logs
+  Path:           lib_test
+  MainIs:         test.ml
+  Build$:         flag(tests)
+  CompiledObject: best
+  Install:        false
+  BuildDepends:   mirage-logs, alcotest, lwt.unix
+
+Test test_logs
+  Run$:             flag(tests)
+  Command:          $test_logs -q
+  WorkingDirectory: lib_test

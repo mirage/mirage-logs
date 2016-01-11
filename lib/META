@@ -1,8 +1,8 @@
 # OASIS_START
-# DO NOT EDIT (digest: 47c0bfb4032e68aa0c0a8de4cea517bf)
+# DO NOT EDIT (digest: 8270e20dae854b54cd29832de406ad77)
 version = "0.1"
 description = "Mirage support for Logs library"
-requires = "logs mirage-types"
+requires = "logs mirage-types lwt mirage-profile"
 archive(byte) = "mirage_logs.cma"
 archive(byte, plugin) = "mirage_logs.cma"
 archive(native) = "mirage_logs.cmxa"

@@ -1,3 +1,3 @@
 B _build
 S .
-PKG mirage-types logs
+PKG mirage-types logs alcotest lwt
