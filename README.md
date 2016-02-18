@@ -10,7 +10,7 @@ If [Mirage tracing][] is enabled, it also writes each log message to the trace b
 See `mirage_logs.mli` for details.
 
 [Logs]: http://erratique.ch/software/logs
-[Mirage-tracing]: https://github.com/mirage/mirage-profile
+[Mirage tracing]: https://github.com/mirage/mirage-profile
 
 # LICENSE
 
