@@ -38,7 +38,6 @@ type threshold_config = Logs.src -> Logs.level
 
 module Make (Clock : V1.CLOCK) : sig
   type t
-  type ring
 
   val run : t -> (unit -> 'a Lwt.t) -> 'a Lwt.t
   (** [run t fn] installs the reporter [t] as the current [Logs] reporter and
