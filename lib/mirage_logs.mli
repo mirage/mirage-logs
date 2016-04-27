@@ -5,31 +5,31 @@
 
     To use this reporter, add a call to [run] at the start of your program:
 
-{[
-module Logs_reporter = Mirage_logs.Make(Clock)
+    {[
+      module Logs_reporter = Mirage_logs.Make(Clock)
 
-let start () =
-  Logs.(set_level (Some Info));
-  Logs_reporter.(create () |> run) @@ fun () ->
-  ...
-]}
+      let start () =
+        Logs.(set_level (Some Info));
+        Logs_reporter.(create () |> run) @@ fun () ->
+        ...
+    ]}
 
     If you'd like to log only important messages to the console by default, but
     still get detailed logs on error:
 
-{[
-module Logs_reporter = Mirage_logs.Make(Clock)
+    {[
+      module Logs_reporter = Mirage_logs.Make(Clock)
 
-let console_threshold src =
-  match Logs.Src.name src with
-  | "noisy.library" -> Logs.Warning
-  | _ -> Logs.Info
+      let console_threshold src =
+        match Logs.Src.name src with
+        | "noisy.library" -> Logs.Warning
+        | _ -> Logs.Info
 
-let start () =
-  Logs.(set_level (Some Debug));
-  Logs_reporter.(create ~ring_size:20 ~console_threshold () |> run) @@ fun () ->
-  ...
-]}
+      let start () =
+        Logs.(set_level (Some Debug));
+        Logs_reporter.(create ~ring_size:20 ~console_threshold () |> run) @@ fun () ->
+        ...
+    ]}
 *)
 
 type threshold_config = Logs.src -> Logs.level
