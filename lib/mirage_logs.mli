@@ -47,6 +47,9 @@ module Make (Clock : V1.CLOCK) : sig
       the ring are dumped to provide extra context (and [Lwt.async_exception_hook]
       is also wrapped, to dump the ring for asynchronous exceptions). *)
 
+  val set_reporter: t -> unit
+  (** [set_reporter t] installs [t] as log reporter. *)
+
   val create :
     ?ch:out_channel ->
     ?ring_size:int ->

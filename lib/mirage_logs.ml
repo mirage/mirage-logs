@@ -105,6 +105,17 @@ module Make (C : V1.CLOCK) = struct
 
   let reporter t = t.reporter
 
+  let set_reporter t =
+    Logs.set_reporter t.reporter;
+    match t.ring with
+    | None -> ()
+    | Some _ ->
+      let old_hook = !Lwt.async_exception_hook in
+      Lwt.async_exception_hook := (fun ex ->
+          dump_ring t t.ch;
+          old_hook ex
+        )
+
   let run t fn =
     Logs.set_reporter t.reporter;
     match t.ring with
