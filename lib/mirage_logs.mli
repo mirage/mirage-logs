@@ -50,6 +50,10 @@ module Make (Clock : V1.CLOCK) : sig
   val set_reporter: t -> unit
   (** [set_reporter t] installs [t] as log reporter. *)
 
+  val unset_reporter: t -> unit
+  (** [unset_reporter t] remove the resources used when [t] has been
+      installed. *)
+
   val create :
     ?ch:out_channel ->
     ?ring_size:int ->

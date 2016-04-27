@@ -15,18 +15,21 @@ let string_of_level =
     | Debug -> "DBG"
 
 module Make (C : V1.CLOCK) = struct
+
   type ring_entry =
     | Unused
     | Entry of float * string
+
   type ring = {
     entries : ring_entry array;
     mutable next : int;
   }
 
   type t = {
-    reporter : Logs.reporter;
-    ring : ring option;
-    ch : out_channel;
+    reporter: Logs.reporter;
+    ring    : ring option;
+    ch      : out_channel;
+    mutable old_hook: (exn -> unit) option;
   }
 
   let fmt_timestamp x =
@@ -101,7 +104,8 @@ module Make (C : V1.CLOCK) = struct
         k () in
       Format.kfprintf k log_fmt ("%s [%s] " ^^ fmt) lvl (Logs.Src.name src) in
     let reporter = { Logs.report } in
-    { reporter; ring; ch }
+    let old_hook = None in
+    { reporter; ring; ch; old_hook }
 
   let reporter t = t.reporter
 
@@ -111,10 +115,18 @@ module Make (C : V1.CLOCK) = struct
     | None -> ()
     | Some _ ->
       let old_hook = !Lwt.async_exception_hook in
+      t.old_hook <- Some old_hook;
       Lwt.async_exception_hook := (fun ex ->
           dump_ring t t.ch;
           old_hook ex
         )
+
+  let unset_reporter t =
+    match t.old_hook with
+    | None   -> ()
+    | Some h ->
+      Lwt.async_exception_hook := h;
+      t.old_hook <- None
 
   let run t fn =
     Logs.set_reporter t.reporter;
