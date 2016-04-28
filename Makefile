@@ -42,7 +42,7 @@ configure:
 
 NAME    = $(shell grep 'Name:' _oasis    | sed 's/Name: *//')
 VERSION = $(shell grep 'Version:' _oasis | sed 's/Version: *//')
-ARCHIVE = https://github.com/mirage/irmin/archive/v$(VERSION).tar.gz
+ARCHIVE = https://github.com/mirage/$(NAME)/archive/v$(VERSION).tar.gz
 
 release:
 	git tag -a v$(VERSION) -m "Version $(VERSION)."
