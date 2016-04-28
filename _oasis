@@ -1,6 +1,6 @@
 OASISFormat: 0.4
 Name:        mirage-logs
-Version:     0.1
+Version:     0.2
 Synopsis:    Mirage support for Logs library
 Authors:     Thomas Leonard
 License:     ISC

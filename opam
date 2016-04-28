@@ -1,15 +1,10 @@
 opam-version: "1.2"
-name: "mirage-logs"
 maintainer: "talex5@gmail.com"
-version: "0.1"
 authors: [ "Thomas Leonard" ]
 license: "ISC"
-homepage: "https://github.com/talex5/mirage-logs"
-dev-repo: "https://github.com/talex5/mirage-logs.git"
-bug-reports: "https://github.com/talex5/mirage-logs/issues"
-
-tags: [
-]
+homepage: "https://github.com/mirage/mirage-logs"
+dev-repo: "https://github.com/mirage/mirage-logs.git"
+bug-reports: "https://github.com/mirage/mirage-logs/issues"
 
 build: [
   [make "PREFIX=%{prefix}%"]
