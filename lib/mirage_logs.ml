@@ -8,25 +8,28 @@ let log_fmt = Format.formatter_of_buffer buf
 
 let string_of_level =
   let open Logs in function
-  | App -> "APP"
-  | Error -> "ERR"
-  | Warning -> "WRN"
-  | Info -> "INF"
-  | Debug -> "DBG"
+    | App -> "APP"
+    | Error -> "ERR"
+    | Warning -> "WRN"
+    | Info -> "INF"
+    | Debug -> "DBG"
 
 module Make (C : V1.CLOCK) = struct
+
   type ring_entry =
     | Unused
     | Entry of float * string
+
   type ring = {
     entries : ring_entry array;
     mutable next : int;
   }
 
   type t = {
-    reporter : Logs.reporter;
-    ring : ring option;
-    ch : out_channel;
+    reporter: Logs.reporter;
+    ring    : ring option;
+    ch      : out_channel;
+    mutable old_hook: (exn -> unit) option;
   }
 
   let fmt_timestamp x =
@@ -52,29 +55,29 @@ module Make (C : V1.CLOCK) = struct
   let log_to_ring time msg = function
     | None -> ()
     | Some ring ->
-        let i = ring.next in
-        ring.entries.(i) <- Entry (time, msg);
-        ring.next <-
-          if i = Array.length ring.entries - 1 then 0
-          else i + 1
+      let i = ring.next in
+      ring.entries.(i) <- Entry (time, msg);
+      ring.next <-
+        if i = Array.length ring.entries - 1 then 0
+        else i + 1
 
   let dump_ring t ch =
     match t.ring with
     | None -> ()
     | Some ring ->
-    Printf.fprintf ch "--- Dumping log ring buffer ---\n";
-    let first = ring.next in
-    let rec dump_from i =
-      begin match ring.entries.(i) with
-      | Unused -> ()
-      | Entry (time, msg) ->
-          Printf.fprintf ch "%s: %s\n%!" (fmt_timestamp time) msg;
-          ring.entries.(i) <- Unused end;
-      let next = i + 1 in
-      let next = if next = Array.length ring.entries then 0 else next in
-      if next <> first then dump_from next in
-    dump_from first;
-    Printf.fprintf ch "--- End dump ---\n%!"
+      Printf.fprintf ch "--- Dumping log ring buffer ---\n";
+      let first = ring.next in
+      let rec dump_from i =
+        begin match ring.entries.(i) with
+          | Unused -> ()
+          | Entry (time, msg) ->
+            Printf.fprintf ch "%s: %s\n%!" (fmt_timestamp time) msg;
+            ring.entries.(i) <- Unused end;
+        let next = i + 1 in
+        let next = if next = Array.length ring.entries then 0 else next in
+        if next <> first then dump_from next in
+      dump_from first;
+      Printf.fprintf ch "--- End dump ---\n%!"
 
   let all_debug _ = Logs.Debug
 
@@ -101,21 +104,41 @@ module Make (C : V1.CLOCK) = struct
         k () in
       Format.kfprintf k log_fmt ("%s [%s] " ^^ fmt) lvl (Logs.Src.name src) in
     let reporter = { Logs.report } in
-    { reporter; ring; ch }
+    let old_hook = None in
+    { reporter; ring; ch; old_hook }
 
   let reporter t = t.reporter
+
+  let set_reporter t =
+    Logs.set_reporter t.reporter;
+    match t.ring with
+    | None -> ()
+    | Some _ ->
+      let old_hook = !Lwt.async_exception_hook in
+      t.old_hook <- Some old_hook;
+      Lwt.async_exception_hook := (fun ex ->
+          dump_ring t t.ch;
+          old_hook ex
+        )
+
+  let unset_reporter t =
+    match t.old_hook with
+    | None   -> ()
+    | Some h ->
+      Lwt.async_exception_hook := h;
+      t.old_hook <- None
 
   let run t fn =
     Logs.set_reporter t.reporter;
     match t.ring with
     | None -> fn ()
     | Some _ ->
-        let old_hook = !Lwt.async_exception_hook in
-        Lwt.async_exception_hook := (fun ex ->
+      let old_hook = !Lwt.async_exception_hook in
+      Lwt.async_exception_hook := (fun ex ->
           dump_ring t t.ch;
           old_hook ex
         );
-        Lwt.finalize
-          (fun () -> Lwt.catch fn (fun ex -> dump_ring t t.ch; Lwt.fail ex))
-          (fun () -> Lwt.async_exception_hook := old_hook; Lwt.return ())
+      Lwt.finalize
+        (fun () -> Lwt.catch fn (fun ex -> dump_ring t t.ch; Lwt.fail ex))
+        (fun () -> Lwt.async_exception_hook := old_hook; Lwt.return ())
 end
