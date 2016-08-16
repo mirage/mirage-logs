@@ -18,6 +18,7 @@ depends: [
   "logs" { >= "0.5.0" }
   "ocamlfind" {build}
   "ocamlbuild" {build}
+  "ptime"
   "mirage-types"
   "mirage-profile"
   "lwt"
