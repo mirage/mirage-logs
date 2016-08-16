@@ -6,7 +6,7 @@
     To use this reporter, add a call to [run] at the start of your program:
 
     {[
-      module Logs_reporter = Mirage_logs.Make(Clock)
+      module Logs_reporter = Mirage_logs.Make(PClock)
 
       let start () =
         Logs.(set_level (Some Info));
@@ -18,7 +18,7 @@
     still get detailed logs on error:
 
     {[
-      module Logs_reporter = Mirage_logs.Make(Clock)
+      module Logs_reporter = Mirage_logs.Make(PClock)
 
       let console_threshold src =
         match Logs.Src.name src with
@@ -36,7 +36,7 @@ type threshold_config = Logs.src -> Logs.level
 (** A function that gives a threshold level for a given log source.
     Only messages at or above the returned level will be processed. *)
 
-module Make (Clock : V1.CLOCK) : sig
+module Make (Clock : V1.PCLOCK) : sig
   type t
 
   val run : t -> (unit -> 'a Lwt.t) -> 'a Lwt.t
@@ -58,7 +58,7 @@ module Make (Clock : V1.CLOCK) : sig
     ?ch:out_channel ->
     ?ring_size:int ->
     ?console_threshold:threshold_config ->
-    unit -> t
+    Clock.t -> t
   (** [create ~ch ()] is a Logs reporter that logs to [ch], with time-stamps
       provided by [Clock].
 

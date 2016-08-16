@@ -14,11 +14,11 @@ let string_of_level =
     | Info -> "INF"
     | Debug -> "DBG"
 
-module Make (C : V1.CLOCK) = struct
+module Make (C : V1.PCLOCK) = struct
 
   type ring_entry =
     | Unused
-    | Entry of float * string
+    | Entry of Ptime.t * int option * string
 
   type ring = {
     entries : ring_entry array;
@@ -32,11 +32,9 @@ module Make (C : V1.CLOCK) = struct
     mutable old_hook: (exn -> unit) option;
   }
 
-  let fmt_timestamp x =
-    let open C in
-    let tm = gmtime x in
-    Printf.sprintf "%04d-%02d-%02d %02d:%02d.%02d"
-      (tm.tm_year + 1900) (tm.tm_mon + 1) tm.tm_mday tm.tm_hour tm.tm_min tm.tm_sec
+  let fmt_timestamp (posix_time, tz) =
+    let printer = Ptime.pp_human ?tz_offset_s:tz () in
+    Format.asprintf "%a" printer posix_time
 
   let pp_tags f tags =
     let pp tag () =
@@ -52,11 +50,11 @@ module Make (C : V1.CLOCK) = struct
     let entries = Array.make size Unused in
     {entries; next = 0}
 
-  let log_to_ring time msg = function
+  let log_to_ring time tz msg = function
     | None -> ()
     | Some ring ->
       let i = ring.next in
-      ring.entries.(i) <- Entry (time, msg);
+      ring.entries.(i) <- Entry (time, tz, msg);
       ring.next <-
         if i = Array.length ring.entries - 1 then 0
         else i + 1
@@ -70,8 +68,8 @@ module Make (C : V1.CLOCK) = struct
       let rec dump_from i =
         begin match ring.entries.(i) with
           | Unused -> ()
-          | Entry (time, msg) ->
-            Printf.fprintf ch "%s: %s\n%!" (fmt_timestamp time) msg;
+          | Entry (posix_time, tz, msg) ->
+            Printf.fprintf ch "%s: %s\n%!" (fmt_timestamp (posix_time, tz)) msg;
             ring.entries.(i) <- Unused end;
         let next = i + 1 in
         let next = if next = Array.length ring.entries then 0 else next in
@@ -81,13 +79,14 @@ module Make (C : V1.CLOCK) = struct
 
   let all_debug _ = Logs.Debug
 
-  let create ?(ch=stderr) ?ring_size ?(console_threshold = all_debug) () =
+  let create ?(ch=stderr) ?ring_size ?(console_threshold = all_debug) clock =
     let ring =
       match ring_size with
       | None -> None
       | Some size -> Some (ring_buffer size) in
     let report src level ~over k msgf =
-      let now = C.time () in
+      let tz = C.current_tz_offset_s clock in
+      let posix_time = Ptime.v @@ C.now_d_ps clock in
       let lvl = string_of_level level in
       msgf @@ fun ?header:_ ?(tags=Logs.Tag.empty) fmt ->
       let k _ =
@@ -97,9 +96,9 @@ module Make (C : V1.CLOCK) = struct
         let msg = Buffer.contents buf in
         Buffer.clear buf;
         if level <= console_threshold src then
-          Printf.fprintf ch "%s: %s\n%!" (fmt_timestamp now) msg;
+          Printf.fprintf ch "%s: %s\n%!" (fmt_timestamp (posix_time, tz)) msg;
         MProf.Trace.label msg;
-        log_to_ring now msg ring;
+        log_to_ring posix_time tz msg ring;
         over ();
         k () in
       Format.kfprintf k log_fmt ("%s [%s] " ^^ fmt) lvl (Logs.Src.name src) in
