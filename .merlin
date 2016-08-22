@@ -1,3 +1,5 @@
-B _build
-S .
-PKG mirage-types logs alcotest lwt
+B _build/
+B _build/lib/
+S lib/
+S lib_test/
+PKG mirage-types logs alcotest lwt ptime
