@@ -1,22 +1,20 @@
 language: c
-install: wget https://raw.githubusercontent.com/ocaml/ocaml-travisci-skeleton/master/.travis-opam.sh
-script: bash -ex .travis-opam.sh
+install: wget https://raw.githubusercontent.com/ocaml/ocaml-travisci-skeleton/master/.travis-docker.sh
+script: bash -ex .travis-docker.sh
+services:
+  - docker
 sudo: false
-addons:
-  apt:
-    sources:
-    - avsm
-    packages:
-    - ocaml
-    - ocaml-base
-    - ocaml-native-compilers
-    - ocaml-compiler-libs
-    - ocaml-interp
-    - ocaml-base-nox
-    - ocaml-nox
-    - camlp4
-    - camlp4-extra
-    - time
-    - libgmp-dev
 env:
-  - FORK_USER=talex5 FORK_BRANCH=containers OPAMYES=true OCAML_VERSION=4.02
+ global:
+   - PACKAGE="mirage-logs"
+   - REVDEPS="true"
+ matrix:
+   - DISTRO=debian-stable OCAML_VERSION=4.03.0
+   - DISTRO=debian-testing OCAML_VERSION=4.02.3
+   - DISTRO=debian-unstable OCAML_VERSION=4.02.3
+   - DISTRO=ubuntu-12.04 OCAML_VERSION=4.02.3
+   - DISTRO=ubuntu-16.04 OCAML_VERSION=4.03.0
+   - DISTRO=centos-6 OCAML_VERSION=4.02.3
+   - DISTRO=centos-7 OCAML_VERSION=4.03.0
+   - DISTRO=fedora-24 OCAML_VERSION=4.02.3
+   - DISTRO=alpine OCAML_VERSION=4.03.0
