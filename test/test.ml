@@ -59,6 +59,8 @@ let console_threshold src =
   | "noisy" -> Logs.Warning
   | _ -> Logs.Info
 
+exception Test_failure of string
+
 let test_ring () =
   with_pipe @@ fun ~r ~w ->
   try Lwt_main.run begin
@@ -68,8 +70,8 @@ let test_ring () =
     Logs.(set_level (Some Debug));
     Logs_reporter.(create ~ch:w ~ring_size:2 ~console_threshold clock |> run) @@ fun () ->
     test_console r;
-    Lwt.fail (Failure "Oops")
-  end with Failure "Oops" ->
+    Lwt.fail (Test_failure "Oops")
+  end with Test_failure "Oops" ->
     let expect msg = Alcotest.(check string) "Ring buffer" msg (input_line r) in
     expect "--- Dumping log ring buffer ---";
     expect "1970-01-01 00:00:00 +00:00: WRN [test] Packet rejected: src=localhost port=7000";
