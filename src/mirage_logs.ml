@@ -7,7 +7,7 @@ let buf = Buffer.create 200
 let log_fmt = Format.formatter_of_buffer buf
 
 let string_of_level =
-  let open Logs in function
+  let open! Logs in function
     | App -> "APP"
     | Error -> "ERR"
     | Warning -> "WRN"

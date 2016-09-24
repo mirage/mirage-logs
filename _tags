@@ -1,44 +1,6 @@
-# OASIS_START
-# DO NOT EDIT (digest: 76de9bed8dfe4443828b9e3fbe4562e6)
-# Ignore VCS directories, you can use the same kind of rule outside
-# OASIS_START/STOP if you want to exclude directories that contains
-# useless stuff for the build process
-true: annot, bin_annot
-<**/.svn>: -traverse
-<**/.svn>: not_hygienic
-".bzr": -traverse
-".bzr": not_hygienic
-".hg": -traverse
-".hg": not_hygienic
-".git": -traverse
-".git": not_hygienic
-"_darcs": -traverse
-"_darcs": not_hygienic
-# Library mirage_logs
-"lib/mirage_logs.cmxs": use_mirage_logs
-<lib/*.ml{,i,y}>: pkg_logs
-<lib/*.ml{,i,y}>: pkg_lwt
-<lib/*.ml{,i,y}>: pkg_mirage-profile
-<lib/*.ml{,i,y}>: pkg_mirage-types
-<lib/*.ml{,i,y}>: pkg_ptime
-# Executable test_logs
-<lib_test/test.{native,byte}>: pkg_alcotest
-<lib_test/test.{native,byte}>: pkg_logs
-<lib_test/test.{native,byte}>: pkg_lwt
-<lib_test/test.{native,byte}>: pkg_lwt.unix
-<lib_test/test.{native,byte}>: pkg_mirage-clock-unix
-<lib_test/test.{native,byte}>: pkg_mirage-profile
-<lib_test/test.{native,byte}>: pkg_mirage-types
-<lib_test/test.{native,byte}>: pkg_ptime
-<lib_test/test.{native,byte}>: use_mirage_logs
-<lib_test/*.ml{,i,y}>: pkg_alcotest
-<lib_test/*.ml{,i,y}>: pkg_logs
-<lib_test/*.ml{,i,y}>: pkg_lwt
-<lib_test/*.ml{,i,y}>: pkg_lwt.unix
-<lib_test/*.ml{,i,y}>: pkg_mirage-clock-unix
-<lib_test/*.ml{,i,y}>: pkg_mirage-profile
-<lib_test/*.ml{,i,y}>: pkg_mirage-types
-<lib_test/*.ml{,i,y}>: pkg_ptime
-<lib_test/*.ml{,i,y}>: use_mirage_logs
-# OASIS_STOP
 true: warn(A), strict_sequence
+true : bin_annot, safe_string, package(bytes)
+true : package(logs mirage-types lwt mirage-profile ptime)
+<test/*> : package(alcotest), package(lwt.unix)
+<src> : include
+<test> : include

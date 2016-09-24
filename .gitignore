@@ -1,5 +1,8 @@
 _build
-setup.data
-setup.log
-test.native
-lib_test/_tests
+tmp
+*~
+\.\#*
+\#*#
+*.install
+*.native
+*.byte
