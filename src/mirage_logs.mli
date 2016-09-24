@@ -1,7 +1,7 @@
 (* Copyright (C) 2016, Thomas Leonard <thomas.leonard@unikernel.com>
    See the README file for details. *)
 
-(** Mirage support for Logs library.
+(** MirageOS support for the Logs library.
 
     To use this reporter, add a call to [run] at the start of your program:
 
@@ -78,8 +78,9 @@ module Make (Clock : V1.PCLOCK) : sig
       may run slowly). *)
 
   val reporter : t -> Logs.reporter
+  (** [reporter t] retrieves the {!Logs.reporter} value associated with {!t} *)
 
   val dump_ring : t -> out_channel -> unit
-  (** Write all entries in the ring buffer to [out_channel] and clear the ring.
+  (** [dump_ring t oc] writes all entries in the ring buffer to [oc] and clears the ring.
       If [t] has no ring buffer, this function does nothing. *)
 end
