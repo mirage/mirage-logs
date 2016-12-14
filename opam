@@ -21,4 +21,5 @@ depends: [
 depopts: []
 build: [
   "ocaml" "pkg/pkg.ml" "build"
+          "--tests" "false"
           "--pinned" "%{pinned}%" ]
