@@ -23,3 +23,9 @@ build: [
   "ocaml" "pkg/pkg.ml" "build"
           "--tests" "false"
           "--pinned" "%{pinned}%" ]
+build-test: [
+  [ "ocaml" "pkg/pkg.ml" "build"
+          "--tests" "true"
+          "--pinned" "%{pinned}%" ]
+  [ "ocaml" "pkg/pkg.ml" "test" ] 
+]
