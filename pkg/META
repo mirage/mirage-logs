@@ -1,6 +1,6 @@
 description = "Mirage support for Logs library"
 version = "%%VERSION_NUM%%"
-requires = "logs mirage-types lwt mirage-profile ptime"
+requires = "logs mirage-clock lwt mirage-profile ptime"
 archive(byte) = "mirage-logs.cma"
 archive(native) = "mirage-logs.cmxa"
 plugin(byte) = "mirage-logs.cma"

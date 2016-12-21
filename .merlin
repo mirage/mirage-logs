@@ -1,4 +1,4 @@
-PKG bytes
+PKG bytes mirage-clock logs lwt ptime
 S src
 S test
 B _build/**
