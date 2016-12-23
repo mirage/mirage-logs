@@ -36,7 +36,7 @@ type threshold_config = Logs.src -> Logs.level
 (** A function that gives a threshold level for a given log source.
     Only messages at or above the returned level will be processed. *)
 
-module Make (Clock : V1.PCLOCK) : sig
+module Make (Clock : Mirage_clock.PCLOCK) : sig
   type t
 
   val run : t -> (unit -> 'a Lwt.t) -> 'a Lwt.t

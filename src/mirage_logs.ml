@@ -14,7 +14,7 @@ let string_of_level =
     | Info -> "INF"
     | Debug -> "DBG"
 
-module Make (C : V1.PCLOCK) = struct
+module Make (C : Mirage_clock.PCLOCK) = struct
 
   type ring_entry =
     | Unused
