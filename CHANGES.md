@@ -1,3 +1,8 @@
+### 0.3.0 (unreleased)
+
+- Build against MirageOS 3, and drop support for earlier versions.
+- Port to topkg.
+
 ### 0.2.0 (2016-04-28)
 
 - Add a `set_reporter` function (#1, @samoht)
