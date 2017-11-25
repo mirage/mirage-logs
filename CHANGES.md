@@ -1,4 +1,4 @@
-### 0.3.0 (unreleased)
+### 0.3.0 (2017-01-19)
 
 - Build against MirageOS 3, and drop support for earlier versions.
 - Port to topkg.
