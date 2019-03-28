@@ -1,6 +1,0 @@
-true: warn(A), strict_sequence
-true : bin_annot, safe_string, package(bytes)
-true : package(logs mirage-clock lwt mirage-profile ptime)
-<test/*> : package(alcotest), package(lwt.unix)
-<src> : include
-<test> : include
