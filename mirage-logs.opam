@@ -5,6 +5,7 @@ license: "ISC"
 homepage: "https://github.com/mirage/mirage-logs"
 dev-repo: "git+https://github.com/mirage/mirage-logs.git"
 bug-reports: "https://github.com/mirage/mirage-logs/issues"
+doc: "https://mirage.github.io/mirage-logs/"
 tags: ["org:mirage"]
 depends: [
   "ocaml" { >= "4.01.0"}
@@ -16,7 +17,6 @@ depends: [
   "lwt"
   "alcotest" {with-test}
 ]
-depopts: []
 build: [ 
   ["dune" "subst"] {pinned}
   ["dune" "build" "-p" name "-j" jobs]
