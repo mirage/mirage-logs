@@ -88,7 +88,7 @@ module Make (C : Mirage_clock.PCLOCK) = struct
       let tz = C.current_tz_offset_s clock in
       let posix_time = Ptime.v @@ C.now_d_ps clock in
       let lvl = string_of_level level in
-      msgf @@ fun ?header:_ ?(tags=Logs.Tag.empty) fmt ->
+      msgf @@ fun ?header ?(tags=Logs.Tag.empty) fmt ->
       let k _ =
         if not (Logs.Tag.is_empty tags) then
           Format.fprintf log_fmt ":%a" pp_tags tags;
@@ -101,7 +101,11 @@ module Make (C : Mirage_clock.PCLOCK) = struct
         log_to_ring posix_time tz msg ring;
         over ();
         k () in
-      Format.kfprintf k log_fmt ("%s [%s] " ^^ fmt) lvl (Logs.Src.name src) in
+      let src = Logs.Src.name src in
+      match header with
+      | None -> Format.kfprintf k log_fmt ("%s [%s] " ^^ fmt) lvl src
+      | Some h -> Format.kfprintf k log_fmt ("%s [%s:%s] " ^^ fmt) lvl src h
+    in
     let reporter = { Logs.report } in
     let old_hook = None in
     { reporter; ring; ch; old_hook }
