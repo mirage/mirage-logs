@@ -90,15 +90,18 @@ module Make (C : Mirage_clock.PCLOCK) = struct
       let lvl = string_of_level level in
       msgf @@ fun ?header ?(tags=Logs.Tag.empty) fmt ->
       let k _ =
-        if not (Logs.Tag.is_empty tags) then
-          Format.fprintf log_fmt ":%a" pp_tags tags;
-        Format.pp_print_flush log_fmt ();
-        let msg = Buffer.contents buf in
-        Buffer.clear buf;
-        if level <= console_threshold src then
-          Printf.fprintf ch "%s: %s\n%!" (fmt_timestamp (posix_time, tz)) msg;
-        MProf.Trace.label msg;
-        log_to_ring posix_time tz msg ring;
+        let report_to_console = level <= console_threshold src in
+        if ring <> None || report_to_console then begin
+          if not (Logs.Tag.is_empty tags) then
+            Format.fprintf log_fmt ":%a" pp_tags tags;
+          Format.pp_print_flush log_fmt ();
+          let msg = Buffer.contents buf in
+          Buffer.clear buf;
+          if report_to_console then
+            Printf.fprintf ch "%s: %s\n%!" (fmt_timestamp (posix_time, tz)) msg;
+          MProf.Trace.label msg;
+          log_to_ring posix_time tz msg ring
+        end;
         over ();
         k () in
       let src = Logs.Src.name src in
