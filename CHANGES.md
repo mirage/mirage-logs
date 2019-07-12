@@ -1,3 +1,7 @@
+## v1.1.0 (2019-07-12)
+
+- Emit log with a header value if present (#14 @talex5)
+
 ## v1.0.0 (2019-04-14)
 
 - Port to dune (#13 @TheLortex @avsm)
