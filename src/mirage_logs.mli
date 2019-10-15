@@ -58,9 +58,10 @@ module Make (Clock : Mirage_clock.PCLOCK) : sig
     ?ch:out_channel ->
     ?ring_size:int ->
     ?console_threshold:threshold_config ->
-    Clock.t -> t
-  (** [create ~ch ()] is a Logs reporter that logs to [ch], with time-stamps
-      provided by [Clock].
+    unit ->
+    t
+  (** [create ~ch ~ring_size ~console_threshold ()] is a Logs reporter that
+      logs to [ch], with time-stamps provided by [Clock].
 
       If [ring_size] is provided then each message that reaches the reporter
       is also written to a ring buffer (with the given size).
