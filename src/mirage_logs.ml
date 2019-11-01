@@ -79,14 +79,14 @@ module Make (C : Mirage_clock.PCLOCK) = struct
 
   let all_debug _ = Logs.Debug
 
-  let create ?(ch=stderr) ?ring_size ?(console_threshold = all_debug) clock =
+  let create ?(ch=stderr) ?ring_size ?(console_threshold = all_debug) () =
     let ring =
       match ring_size with
       | None -> None
       | Some size -> Some (ring_buffer size) in
     let report src level ~over k msgf =
-      let tz = C.current_tz_offset_s clock in
-      let posix_time = Ptime.v @@ C.now_d_ps clock in
+      let tz = C.current_tz_offset_s () in
+      let posix_time = Ptime.v @@ C.now_d_ps () in
       let lvl = string_of_level level in
       msgf @@ fun ?header ?(tags=Logs.Tag.empty) fmt ->
       let k _ =
