@@ -1,3 +1,7 @@
+## v1.2.0 (2019-11-01)
+
+- Adapt to mirage-clock 3.0.0 interface changes (#17 @hannesm)
+
 ## v1.1.0 (2019-07-12)
 
 - Emit log with a header value if present (#14 @talex5)
