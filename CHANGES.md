@@ -1,3 +1,7 @@
+## v1.3.0 (2023-03-12)
+
+- Remove the mirage-profile dependency (#18 @hannesm)
+
 ## v1.2.0 (2019-11-01)
 
 - Adapt to mirage-clock 3.0.0 interface changes (#17 @hannesm)
