@@ -42,8 +42,7 @@ let test_console r =
       f ~tags:(tags ~src:"localhost" ~port:7000) "Packet rejected");
   Alcotest.(check string)
     "Tags"
-    "1970-01-01T00:00:00Z: WRN [test] Packet rejected: src=localhost \
-     port=7000"
+    "1970-01-01T00:00:00Z: WRN [test] Packet rejected: src=localhost port=7000"
     (input_line r);
   Log.debug (fun f -> f "Not shown")
 
@@ -60,11 +59,4 @@ let test () =
      test_console r;
      Lwt.return ())
 
-let () =
-  Alcotest.run "mirage-logs"
-    [
-      ( "Tests",
-        [
-          ("Logging", `Quick, test);
-        ] );
-    ]
+let () = Alcotest.run "mirage-logs" [ ("Tests", [ ("Logging", `Quick, test) ]) ]

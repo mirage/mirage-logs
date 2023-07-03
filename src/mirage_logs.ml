@@ -34,7 +34,9 @@ module Make (C : Mirage_clock.PCLOCK) = struct
         Format.pp_print_flush log_fmt ();
         let msg = Buffer.contents buf in
         Buffer.clear buf;
-        Format.fprintf ch "%a: %s\n%!" (Ptime.pp_rfc3339 ?tz_offset_s ()) posix_time msg;
+        Format.fprintf ch "%a: %s\n%!"
+          (Ptime.pp_rfc3339 ?tz_offset_s ())
+          posix_time msg;
         over ();
         k ()
       in
