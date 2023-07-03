@@ -1,4 +1,5 @@
 (library
-  (name mirage_logs)
-  (public_name mirage-logs)
-  (libraries logs mirage-clock lwt ptime))
+ (name mirage_logs)
+ (public_name mirage-logs)
+ (modules mirage_logs)
+ (libraries logs mirage-clock lwt ptime))
