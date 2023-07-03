@@ -37,83 +37,34 @@ let with_pipe fn =
 let test_console r =
   Log.info (fun f -> f "Simple test");
   Alcotest.(check string)
-    "Simple" "1970-01-01 00:00:00 +00:00: INF [test] Simple test" (input_line r);
+    "Simple" "1970-01-01T00:00:00Z: INF [test] Simple test" (input_line r);
   Log.warn (fun f ->
       f ~tags:(tags ~src:"localhost" ~port:7000) "Packet rejected");
   Alcotest.(check string)
     "Tags"
-    "1970-01-01 00:00:00 +00:00: WRN [test] Packet rejected: src=localhost \
+    "1970-01-01T00:00:00Z: WRN [test] Packet rejected: src=localhost \
      port=7000"
     (input_line r);
   Log.debug (fun f -> f "Not shown")
 
-let test_no_ring () =
+let test () =
   with_pipe @@ fun ~r ~w ->
   Lwt_main.run
     (let ( >>= ) = Lwt.bind in
      Clock.connect () >>= fun clock ->
      Logs.(set_level (Some Info));
-     Logs_reporter.(create ~ch:w clock |> run) @@ fun () ->
+     let reporter =
+       Logs_reporter.create ~ch:(Format.formatter_of_out_channel w) clock
+     in
+     Logs.set_reporter reporter;
      test_console r;
      Lwt.return ())
-
-let console_threshold src =
-  match Logs.Src.name src with "noisy" -> Logs.Warning | _ -> Logs.Info
-
-exception Test_failure
-
-let test_ring () =
-  with_pipe @@ fun ~r ~w ->
-  try
-    Lwt_main.run
-      (let ( >>= ) = Lwt.bind in
-       Clock.connect () >>= fun clock ->
-       Logs.(set_level (Some Info));
-       Logs.(set_level (Some Debug));
-       Logs_reporter.(create ~ch:w ~ring_size:2 ~console_threshold clock |> run)
-       @@ fun () ->
-       test_console r;
-       Lwt.fail Test_failure)
-  with Test_failure ->
-    let expect msg = Alcotest.(check string) "Ring buffer" msg (input_line r) in
-    expect "--- Dumping log ring buffer ---";
-    expect
-      "1970-01-01 00:00:00 +00:00: WRN [test] Packet rejected: src=localhost \
-       port=7000";
-    expect "1970-01-01 00:00:00 +00:00: DBG [test] Not shown";
-    expect "--- End dump ---"
-
-let test_ring_async () =
-  with_pipe @@ fun ~r ~w ->
-  let expect msg = Alcotest.(check string) "Ring buffer" msg (input_line r) in
-  Lwt_main.run
-    (let ( >>= ) = Lwt.bind in
-     Clock.connect () >>= fun clock ->
-     Logs.(set_level (Some Debug));
-     Lwt.async_exception_hook := ignore;
-     let rep =
-       Logs_reporter.create ~ch:w ~ring_size:2 ~console_threshold clock
-     in
-     Logs_reporter.dump_ring rep w;
-     expect "--- Dumping log ring buffer ---";
-     expect "--- End dump ---";
-     Logs_reporter.run rep @@ fun () ->
-     test_console r;
-     Noisy.info (fun f -> f "From noisy");
-     Lwt.async (fun () -> Lwt.fail (Failure "Oops"));
-     Lwt.return ());
-  expect "--- Dumping log ring buffer ---";
-  expect "1970-01-01 00:00:00 +00:00: DBG [test] Not shown";
-  expect "1970-01-01 00:00:00 +00:00: INF [noisy] From noisy";
-  expect "--- End dump ---"
 
 let () =
   Alcotest.run "mirage-logs"
     [
       ( "Tests",
         [
-          ("Logging without a ring", `Quick, test_no_ring);
-          ("Logging with a ring", `Quick, test_ring);
-          ("Logging with a ring, async error", `Quick, test_ring_async);
+          ("Logging", `Quick, test);
         ] );
     ]
