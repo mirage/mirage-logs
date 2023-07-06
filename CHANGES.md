@@ -1,4 +1,4 @@
-## v2.0.0 (2023-07-05)
+## v2.0.0 (2023-07-06)
 
 - Bump to Dune3 (#19, @samoht)
 - Remove `create` optional `ring_size` `console_threshold` parameters
