@@ -1,3 +1,14 @@
+## v2.0.0 (2023-07-06)
+
+- Bump to Dune3 (#19, @samoht)
+- Remove `create` optional `ring_size` `console_threshold` parameters
+  (#21, @hannesm)
+- use Ptime.pp_rfc3339 for nicer output (esp. if time zone offset is
+  None) (#21, @hannesm)
+- Remove custom types (`type t` / `set_reporter` / `unset_reporter` /
+  `reporter`) (#21, @hannesm)
+- Add mirage-logs.cli to define Cmdliner terms (#20, @samoht)
+
 ## v1.3.0 (2023-03-12)
 
 - Remove the mirage-profile dependency (#18 @hannesm)
