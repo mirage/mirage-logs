@@ -2,7 +2,7 @@
  (name mirage_logs)
  (public_name mirage-logs)
  (modules mirage_logs)
- (libraries logs mirage-clock ptime))
+ (libraries logs mirage-clock ptime logs.fmt fmt))
 
 (library
  (name mirage_logs_cli)

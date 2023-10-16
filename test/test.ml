@@ -37,13 +37,13 @@ let with_pipe fn =
 let test_console r =
   Log.info (fun f -> f "Simple test");
   Alcotest.(check string)
-    "Simple" "1970-01-01T00:00:00Z: INFO [test] Simple test" (input_line r);
+    "Simple" "1970-01-01T00:00:00Z: [INFO] [test] Simple test" (input_line r);
   Log.warn (fun f ->
       f ~tags:(tags ~src:"localhost" ~port:7000) "Packet rejected");
   Alcotest.(check string)
     "Tags"
-    "1970-01-01T00:00:00Z: WARNING [test] Packet rejected: src=localhost \
-     port=7000"
+    "1970-01-01T00:00:00Z: src=localhost port=7000 [WARNING] [test] Packet \
+     rejected"
     (input_line r);
   Log.debug (fun f -> f "Not shown")
 
