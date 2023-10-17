@@ -1,3 +1,9 @@
+## v2.1.0 (2023-10-17)
+
+- use Logs.pp_level instead of a custom string_of_level (#23 @hannesm)
+- avoid global buffer, reuse Logs_fmt.pp_header for color (#25 @hannesm,
+  fixes #24)
+
 ## v2.0.0 (2023-07-06)
 
 - Bump to Dune3 (#19, @samoht)
