@@ -1,4 +1,4 @@
 (test
  (name test)
- (libraries alcotest lwt lwt.unix mirage-logs)
+ (libraries alcotest lwt lwt.unix mirage-logs mirage-clock.unix)
  (package mirage-logs))

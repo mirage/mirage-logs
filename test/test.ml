@@ -1,17 +1,6 @@
 (* Copyright (C) 2016, Thomas Leonard <thomas.leonard@unikernel.com>
    See the README file for details. *)
 
-module Clock = struct
-  type t = unit
-
-  let connect () : t Lwt.t = Lwt.return_unit
-  let now_d_ps _ = (0, 0L)
-  let current_tz_offset_s _ = Some 0
-  let period_d_ps _ = None
-end
-
-module Logs_reporter = Mirage_logs.Make (Clock)
-
 let src = Logs.Src.create "test" ~doc:"mirage-logs test code"
 
 module Log = (val Logs.src_log src : Logs.LOG)
@@ -34,27 +23,28 @@ let with_pipe fn =
     Alcotest.fail (Printf.sprintf "Unexpected data in pipe: %S" (input_line r))
   with End_of_file -> close_in r
 
+let get_line_without_timestamp r =
+  let line = input_line r in
+  String.concat " " (List.tl (String.split_on_char ' ' line))
+
 let test_console r =
   Log.info (fun f -> f "Simple test");
   Alcotest.(check string)
-    "Simple" "1970-01-01T00:00:00Z: [INFO] [test] Simple test" (input_line r);
+    "Simple" "[INFO] [test] Simple test" (get_line_without_timestamp r);
   Log.warn (fun f ->
       f ~tags:(tags ~src:"localhost" ~port:7000) "Packet rejected");
   Alcotest.(check string)
     "Tags"
-    "1970-01-01T00:00:00Z: src=localhost port=7000 [WARNING] [test] Packet \
-     rejected"
-    (input_line r);
+    "src=localhost port=7000 [WARNING] [test] Packet rejected"
+    (get_line_without_timestamp r);
   Log.debug (fun f -> f "Not shown")
 
 let test () =
   with_pipe @@ fun ~r ~w ->
   Lwt_main.run
-    (let ( >>= ) = Lwt.bind in
-     Clock.connect () >>= fun clock ->
-     Logs.(set_level (Some Info));
+    (Logs.(set_level (Some Info));
      let reporter =
-       Logs_reporter.create ~ch:(Format.formatter_of_out_channel w) clock
+       Mirage_logs.create ~ch:(Format.formatter_of_out_channel w) ()
      in
      Logs.set_reporter reporter;
      test_console r;
