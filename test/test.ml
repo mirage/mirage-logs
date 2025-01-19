@@ -39,13 +39,11 @@ let test_console r =
 let test () =
   with_pipe @@ fun ~r ~w ->
   Mirage_ptime_set.set_tz_offset (Some 0);
-  Lwt_main.run
-    (Logs.(set_level (Some Info));
-     let reporter =
-       Mirage_logs.create ~ch:(Format.formatter_of_out_channel w) ()
-     in
-     Logs.set_reporter reporter;
-     test_console r;
-     Lwt.return ())
+  Logs.(set_level (Some Info));
+  let reporter =
+    Mirage_logs.create ~ch:(Format.formatter_of_out_channel w) ()
+  in
+  Logs.set_reporter reporter;
+  test_console r
 
 let () = Alcotest.run "mirage-logs" [ ("Tests", [ ("Logging", `Quick, test) ]) ]
