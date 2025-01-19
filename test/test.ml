@@ -1,17 +1,6 @@
 (* Copyright (C) 2016, Thomas Leonard <thomas.leonard@unikernel.com>
    See the README file for details. *)
 
-module Clock = struct
-  type t = unit
-
-  let connect () : t Lwt.t = Lwt.return_unit
-  let now_d_ps _ = (0, 0L)
-  let current_tz_offset_s _ = Some 0
-  let period_d_ps _ = None
-end
-
-module Logs_reporter = Mirage_logs.Make (Clock)
-
 let src = Logs.Src.create "test" ~doc:"mirage-logs test code"
 
 module Log = (val Logs.src_log src : Logs.LOG)
@@ -49,12 +38,11 @@ let test_console r =
 
 let test () =
   with_pipe @@ fun ~r ~w ->
+  Mirage_ptime_set.set_tz_offset (Some 0);
   Lwt_main.run
-    (let ( >>= ) = Lwt.bind in
-     Clock.connect () >>= fun clock ->
-     Logs.(set_level (Some Info));
+    (Logs.(set_level (Some Info));
      let reporter =
-       Logs_reporter.create ~ch:(Format.formatter_of_out_channel w) clock
+       Mirage_logs.create ~ch:(Format.formatter_of_out_channel w) ()
      in
      Logs.set_reporter reporter;
      test_console r;
