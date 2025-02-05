@@ -26,3 +26,4 @@ synopsis: "A reporter for the Logs library that writes log messages to stderr, u
 description: """
 The Logs reporter prefixes each entry with a timestamp, and writes it to stderr.
 """
+x-maintenance-intent: [ "(latest)" ]
