@@ -10,5 +10,5 @@ val create : ?ch:Format.formatter -> unit -> Logs.reporter
     [Format.err_formatter]), with time-stamps provided by [Clock].
 
     If logs are written faster than the backend can consume them, the whole
-    unikernel will block until there is space (so log messages will not be
-    lost, but unikernels generating a lot of log output may run slowly). *)
+    unikernel will block until there is space (so log messages will not be lost,
+    but unikernels generating a lot of log output may run slowly). *)
