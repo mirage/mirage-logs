@@ -1,3 +1,7 @@
+## v3.0.0 (2025-03-05)
+
+- Use mirage-ptime (a dune variant) instead of mirage-clock (#29 @hannesm)
+
 ## v2.1.0 (2023-10-17)
 
 - use Logs.pp_level instead of a custom string_of_level (#23 @hannesm)
